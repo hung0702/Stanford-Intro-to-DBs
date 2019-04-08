@@ -1,0 +1,112 @@
+>Q1
+
+select distinct name
+from Movie, Reviewer, Rating
+where Movie.mID = Rating.mID and Reviewer.rID = Rating.rID /*match tuples by mID & rID*/
+    and title = 'Gone with the Wind'
+
+>Q2
+
+select name, title, stars
+from Movie, Reviewer, Rating
+where Movie.mID = Rating.mID and Reviewer.rID = Rating.rID /*match tuples by mID & rID*/
+    and name = director
+
+>Q3
+
+select distinct name from Reviewer
+union
+select distinct title from Movie
+
+>Q4
+
+select title 
+from (
+    select title, mID
+    from Movie 
+    except 
+    select title, Movie.mID
+    from Movie, Reviewer, Rating
+        where Movie.mID = Rating.mID and Reviewer.rID = Rating.rID /*match tuples by mID & rID*/
+            and Reviewer.name = 'Chris Jackson');
+
+>Q5
+
+select distinct RVL.name, RVR.name
+from Reviewer RVL, Reviewer RVR, Rating RTL, Rating RTR
+where RVL.name < RVR.name and RVL.rID = RTL.rID and RVR.rID = RTR.rID and RTL.mID = RTR.mID
+order by RVL.name
+
+>Q6
+
+select distinct name, title, stars
+from Rating, Movie, Reviewer
+where Rating.mID = Movie.mID 
+    and Rating.rID = Reviewer.rID 
+    and stars = (select min(stars) from Rating)
+order by title
+
+>Q7
+
+select title, avg(stars)
+from Movie join Rating using(mID)
+group by Rating.mID
+order by avg(stars) desc, title
+
+>Q8
+
+select distinct name
+from Reviewer, Rating R1, Rating R2, Rating R3
+where Reviewer.rID = R1.rID 
+    and Reviewer.rID = R2.rID and Reviewer.rID = R3.rID 
+    and R1.stars < R2.stars and R1.stars < R3.stars and R2.stars < R3.stars
+    or 
+    Reviewer.rID = R1.rID and Reviewer.rID = R2.rID and Reviewer.rID = R3.rID 
+    and R1.ratingDate < R2.ratingDate and R1.ratingDate < R3.ratingDate and R2.ratingDate < R3.ratingDate
+
+>Q9
+
+select title, director
+from (
+    select M1.title, M1.director
+    from Movie M1, Movie M2
+    where M1.director = M2.director and M1.title <> M2.title
+    )
+order by director, title
+
+>Q10
+
+select title, avg(stars)
+from Movie, Rating
+where Movie.mID = Rating.mID
+group by Rating.mID
+having avg(stars) = (
+    select max(stars)
+    from (
+        select avg(Rating.stars) as stars
+        from Rating
+    group by Rating.mID
+    )
+)
+
+>Q11
+
+select title, avg(stars)
+from Movie, Rating
+where Movie.mID = Rating.mID
+group by Rating.mID
+having avg(stars) = (
+    select min(S)
+    from (
+        select avg(Rating.stars) as S
+        from Rating
+        group by Rating.mID
+    )
+)
+
+>Q12
+
+select director, title, max(stars)
+from Rating join Movie using(mID)
+where director is not null
+group by director
