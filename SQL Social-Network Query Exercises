@@ -62,12 +62,12 @@ where H1.ID = L.ID1 and H2.ID = L.ID2 /*name & ID who likes who*/
   and H1.ID = F1.ID1 and H2.ID = F2.ID1 and H3.ID = F1.ID2 and H3.ID = F2.ID2 /*find mutual friend*/
   and H2.ID not in (select ID2 from Friend where ID1 = H1.ID) /*exclude Likes pairs who are friends*/
 
->Q8. 
+>Q8. Find the difference between the number of students in the school and the number of different first names. 
 
 select count(ID) - count(distinct name) 
 from Highschooler
 
->Q9. 
+>Q9. Find the name and grade of all students who are liked by more than one other student. 
 
 select name, grade
 from Likes L join Highschooler H on L.ID2 = H.ID
